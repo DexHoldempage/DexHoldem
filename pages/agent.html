@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem — 36 Problems, 8 Perception Challenges | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem agentic perception bench: 36 real tabletop states scored on up to 8 structured fields covering stage, turn, blind, cards, chips, bets, and outcome." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<style>
+      .problem-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+        width: min(1180px, 100%);
+      }
+      .problem-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        cursor: pointer;
+        transition: box-shadow 160ms ease, border-color 160ms ease;
+      }
+      .problem-card:hover,
+      .problem-card.is-selected {
+        border-color: var(--blue);
+        box-shadow: 0 4px 16px rgba(45, 95, 157, 0.14);
+      }
+      .problem-card img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        display: block;
+      }
+      .problem-card-body {
+        padding: 12px 14px;
+      }
+      .problem-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+      .problem-card-id {
+        font-weight: 850;
+        font-size: 0.88rem;
+        color: var(--ink);
+      }
+      .problem-card-stage {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.72rem;
+        color: #fff;
+      }
+      .problem-card-stage.idle { background: #94a3b8; }
+      .problem-card-stage.acting { background: var(--blue); }
+      .problem-card-stage.atom_idle { background: var(--gold); }
+      .problem-card-stage.win { background: var(--green); }
+      .problem-card-stage.lose { background: var(--accent); }
+      .problem-card-stage.to_recover { background: #e67e22; }
+      .problem-card-stage.down { background: #7c3aed; }
+      .problem-col-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 8px;
+      }
+      .col-tag {
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: rgba(45, 95, 157, 0.10);
+        color: var(--blue);
+      }
+      .col-tag.highlight {
+        background: var(--blue);
+        color: #fff;
+      }
+      .problem-card-meta {
+        margin-top: 6px;
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .problem-detail-panel {
+        display: none;
+        width: min(1180px, 100%);
+        margin-top: 18px;
+        border: 2px solid var(--blue);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .problem-detail-panel.is-open {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+      }
+      .problem-detail-panel img {
+        width: 100%;
+        display: block;
+      }
+      .problem-detail-info {
+        padding: 20px;
+        font-size: 0.88rem;
+        line-height: 1.7;
+        overflow-y: auto;
+        max-height: 500px;
+      }
+      .problem-detail-info .state-field {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .problem-detail-info .state-field:last-child {
+        border-bottom: none;
+      }
+      .problem-detail-info .state-field-label {
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .problem-detail-info .state-field-value {
+        color: var(--muted);
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        text-align: right;
+      }
+      .scored-columns-section {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      .scored-columns-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: min(1180px, 100%);
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 680px) {
+        .problem-grid { grid-template-columns: 1fr; }
+        .problem-detail-panel.is-open { grid-template-columns: 1fr; }
+      }
+    </style>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#abstract">Abstract</a>
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#system">System</a>
+<a href="../index.html#perception">Perception</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page" id="main-content">
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Agentic Perception Bench</p>
+<h2>Perception problems.</h2>
+<p>
+            Each problem is a real tabletop state sampled from system-level deployment.
+            The perceiver receives the agent-view capture of the target state together with
+            predecessor states as context, and must recover 8 structured fields:
+            loop stage (LS), turn ownership (TO), blind position (BI), community cards (CC),
+            current bets (CB), robot chip inventory (RCI), opponent chip inventory (OCI),
+            and showdown outcome (SO). Not every problem is scored on all 8 fields—when
+            predecessor context already determines a field (e.g. chips and bets are
+            unchanged during a robot action, or community cards are absent pre-flop), that
+            field is excluded from scoring. Click any problem below to inspect its target
+            state and the subset of fields it is scored on.
+          </p>
+</div>
+<div class="filter-row" id="col-filter">
+<button class="filter-button active" data-filter="all" type="button">All (36)</button>
+<button class="filter-button" data-filter="community" type="button">CC (13)</button>
+<button class="filter-button" data-filter="bet" type="button">CB / RCI / OCI (16)</button>
+<button class="filter-button" data-filter="outcome" type="button">SO (7)</button>
+</div>
+<div class="problem-detail-panel" id="detail-panel">
+<img alt="" id="detail-img" src=""/>
+<div class="problem-detail-info" id="detail-info"></div>
+</div>
+<div class="problem-grid" id="problem-grid"></div>
+<div class="table-wrap perception-results-wrap" style="margin-top: 48px;">
+<table class="leaderboard perception-results">
+<caption>Per-perceiver accuracy on perception bench. Overall is strict problem-level exact match; sub-field columns are field-wise accuracies on applicable subsets.</caption>
+<thead>
+<tr>
+<th scope="col">Harness</th>
+<th scope="col">Perceiver</th>
+<th scope="col"><span class="col-tip" data-tip="Strict problem-level exact match: correct only when every applicable field is correct">Overall</span></th>
+<th scope="col"><span class="col-tip" data-tip="Loop Stage: whether the robot is idle, acting, waiting for atom completion, in recovery, or at a win/lose outcome">LS</span></th>
+<th scope="col"><span class="col-tip" data-tip="Turn Ownership: whether it is the robot's turn to act or the opponent's">TO</span></th>
+<th scope="col"><span class="col-tip" data-tip="Blind Information: the robot's blind position (big blind, small blind, or none)">BI</span></th>
+<th scope="col"><span class="col-tip" data-tip="Community Cards: identity of visible community cards on the table; scored only when community cards are present">CC</span></th>
+<th scope="col"><span class="col-tip" data-tip="Current Bet Chips: exact denomination-level chip counts for both players' current bets; scored on table-decision and outcome-judge problems">CB</span></th>
+<th scope="col"><span class="col-tip" data-tip="Robot Chip Inventory: exact denomination-level count of the robot's remaining chip stacks; scored on table-decision and outcome-judge problems">RCI</span></th>
+<th scope="col"><span class="col-tip" data-tip="Opponent Chip Inventory: exact denomination-level count of the opponent's remaining chips; especially difficult due to occlusion and distance">OCI</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Showdown Outcome: win, lose, or tie judgment from visible cards and game context; scored only on showdown/outcome-judge problems">SO</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Field-wise Average: unweighted mean of the eight sub-capability columns, excluding Overall">Avg</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.5</td>
+<td>31.5</td>
+<td>72.2</td>
+<td>80.6</td>
+<td>100.0</td>
+<td>61.5</td>
+<td>45.8</td>
+<td>62.5</td>
+<td>35.4</td>
+<td>76.2</td>
+<td><strong>66.8</strong></td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4</td>
+<td>31.5</td>
+<td>65.7</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>31.2</td>
+<td>56.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>54.5</td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4 mini</td>
+<td>25.9</td>
+<td>56.5</td>
+<td>94.4</td>
+<td>99.1</td>
+<td>33.3</td>
+<td>14.6</td>
+<td>29.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>49.2</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Opus 4.7</td>
+<td><strong>34.3</strong></td>
+<td>43.5</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>43.6</td>
+<td>31.2</td>
+<td>37.5</td>
+<td>43.8</td>
+<td>0.0</td>
+<td>49.1</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Sonnet 4.6</td>
+<td>25.0</td>
+<td>46.3</td>
+<td>88.0</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>10.4</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>14.3</td>
+<td>41.8</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Haiku 4.5</td>
+<td>13.9</td>
+<td>47.2</td>
+<td>68.5</td>
+<td>91.7</td>
+<td>35.9</td>
+<td>12.5</td>
+<td>25.0</td>
+<td>18.8</td>
+<td>0.0</td>
+<td>37.4</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3 Flash</td>
+<td>20.4</td>
+<td>63.9</td>
+<td>77.8</td>
+<td>100.0</td>
+<td>28.2</td>
+<td>18.8</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>71.4</td>
+<td>51.5</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3.1 Flash L.</td>
+<td>10.2</td>
+<td>27.8</td>
+<td>73.1</td>
+<td>94.4</td>
+<td>28.2</td>
+<td>12.5</td>
+<td>22.9</td>
+<td>14.6</td>
+<td>0.0</td>
+<td>34.2</td>
+</tr>
+</tbody>
+</table>
+<p class="table-note">Notes: each sub-field column is scored only on the subset of problems where that field applies. Overall requires exact match across all applicable fields per problem. Accuracy may vary due to harness version. Current results evaluated May 7, 2026.</p>
+</div>
+</section>
+<section class="detail-section detail-links">
+
+<a class="button" href="../index.html#perception">Homepage Summary</a>
+<a class="button" href="../index.html#demo-release">Back To Release Cards</a>
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+<script>
+const PROBLEMS = [
+  {id:"p1",preds:0,stage:"idle",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":4,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":0,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p2",preds:0,stage:"idle",blind:"big blind",turn:false,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":4,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":0,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p3",preds:1,stage:"acting",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p4",preds:5,stage:"atom_idle",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p5",preds:3,stage:"to_recover",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p6",preds:3,stage:"down",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p7",preds:10,stage:"acting",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p8",preds:15,stage:"atom_idle",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p9",preds:18,stage:"idle",blind:"big blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips"]},
+  {id:"p10",preds:22,stage:"to_recover",blind:"big_blind",turn:true,community:[],my_chips:{"5":4,"10":4,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p11",preds:23,stage:"idle",blind:"big_blind",turn:true,community:[],my_chips:{"5":4,"10":3,"50":4,"100":4},opp_chips:{"5":3,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":1,"50":0,"100":0},opp_bet:{"5":1,"10":0,"50":0,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips"]},
+  {id:"p12",preds:24,stage:"acting",blind:"big_blind",turn:true,community:["7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":4,"100":4},opp_chips:{"5":2,"10":4,"50":4,"100":4},my_bet:{"5":0,"10":1,"50":0,"100":0},opp_bet:{"5":2,"10":0,"50":0,"100":0},columns:["stage","turn","blind"]},
+  {id:"p13",preds:25,stage:"idle",blind:"big_blind",turn:true,community:["7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":4,"100":3},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":0,"100":1},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p14",preds:28,stage:"idle",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":3},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":1},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p15",preds:30,stage:"acting",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":3},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":1},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind"]},
+  {id:"p16",preds:30,stage:"to_recover",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":3},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":1},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind"]},
+  {id:"p17",preds:30,stage:"down",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":3},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":1},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind"]},
+  {id:"p18",preds:31,stage:"idle",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p19",preds:32,stage:"win",blind:"big_blind",turn:true,community:["Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":1},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p20",preds:33,stage:"idle",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p21",preds:34,stage:"atom_idle",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind"]},
+  {id:"p22",preds:37,stage:"atom_idle",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind"]},
+  {id:"p23",preds:39,stage:"win",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p24",preds:41,stage:"acting",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind"]},
+  {id:"p25",preds:42,stage:"atom_idle",blind:"big_blind",turn:true,community:["Ts","Qh","7d","6s","Jc"],my_chips:{"5":4,"10":3,"50":3,"100":2},opp_chips:{"5":2,"10":4,"50":3,"100":2},my_bet:{"5":0,"10":1,"50":1,"100":2},opp_bet:{"5":2,"10":0,"50":1,"100":2},columns:["stage","turn","blind"]},
+  {id:"p26",preds:0,stage:"idle",blind:"big_blind",turn:true,community:[],my_chips:{"5":4,"10":3,"50":2,"100":2},opp_chips:{"5":4,"10":4,"50":3,"100":3},my_bet:{"5":0,"10":0,"50":0,"100":0},opp_bet:{"5":0,"10":0,"50":0,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips"]},
+  {id:"p27",preds:0,stage:"idle",blind:"big_blind",turn:true,community:["Tc","5h","3s"],my_chips:{"5":3,"10":2,"50":2,"100":2},opp_chips:{"5":3,"10":4,"50":3,"100":3},my_bet:{"5":2,"10":0,"50":0,"100":0},opp_bet:{"5":0,"10":1,"50":0,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p28",preds:0,stage:"idle",blind:"small_blind",turn:false,community:["Tc","5h","3c","3s"],my_chips:{"5":3,"10":2,"50":1,"100":1},opp_chips:{"5":3,"10":4,"50":2,"100":3},my_bet:{"5":2,"10":0,"50":0,"100":1},opp_bet:{"5":0,"10":0,"50":3,"100":0},columns:["stage","turn","blind"]},
+  {id:"p29",preds:0,stage:"idle",blind:"small_blind",turn:false,community:["Tc","5h","3c","3s","Kh"],my_chips:{"5":4,"10":4,"50":1,"100":2},opp_chips:{"5":4,"10":3,"50":1,"100":2},my_bet:{"5":0,"10":0,"50":1,"100":1},opp_bet:{"5":0,"10":0,"50":3,"100":0},columns:["stage","turn","blind"]},
+  {id:"p30",preds:0,stage:"lose",blind:"small_blind",turn:false,community:["Tc","5h","3c","3s","Kh"],my_chips:{"5":4,"10":4,"50":1,"100":2},opp_chips:{"5":4,"10":3,"50":1,"100":2},my_bet:{"5":0,"10":0,"50":1,"100":1},opp_bet:{"5":0,"10":0,"50":3,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p31",preds:0,stage:"win",blind:"small_blind",turn:false,community:["Kd","4c","Ks","Ac","Jh"],my_chips:{"5":1,"10":3,"50":3,"100":3},opp_chips:{"5":3,"10":3,"50":3,"100":2},my_bet:{"5":3,"10":0,"50":0,"100":0},opp_bet:{"5":1,"10":1,"50":0,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p32",preds:0,stage:"lose",blind:"small_blind",turn:false,community:["Qh","3c","Js","Kc","8d"],my_chips:{"5":2,"10":1,"50":2,"100":3},opp_chips:{"5":3,"10":2,"50":3,"100":2},my_bet:{"5":2,"10":4,"50":0,"100":0},opp_bet:{"5":0,"10":0,"50":1,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p33",preds:0,stage:"lose",blind:"small_blind",turn:true,community:["Qh","8d","Kc","Js","3c"],my_chips:{"5":2,"10":1,"50":3,"100":3},opp_chips:{"5":3,"10":1,"50":4,"100":2},my_bet:{"5":2,"10":4,"50":0,"100":0},opp_bet:{"5":0,"10":0,"50":1,"100":0},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+  {id:"p34",preds:0,stage:"idle",blind:"big_blind",turn:false,community:["Jh","Ac","4c"],my_chips:{"5":1,"10":1,"50":1,"100":1},opp_chips:{"5":4,"10":2,"50":5,"100":2},my_bet:{"5":0,"10":1,"50":0,"100":1},opp_bet:{"5":2,"10":0,"50":0,"100":1},columns:["stage","turn","blind"]},
+  {id:"p35",preds:1,stage:"idle",blind:"big_blind",turn:true,community:["Jh","Ac","4c"],my_chips:{"5":1,"10":1,"50":1,"100":1},opp_chips:{"5":4,"10":2,"50":5,"100":1},my_bet:{"5":0,"10":1,"50":0,"100":1},opp_bet:{"5":2,"10":0,"50":0,"100":2},columns:["stage","turn","blind","bet","my_chips","opp_chips","community"]},
+  {id:"p36",preds:0,stage:"win",blind:"big_blind",turn:false,community:["Jh","Ac","4c","Ks","Kd"],my_chips:{"5":0,"10":0,"50":0,"100":0},opp_chips:{"5":3,"10":1,"50":4,"100":1},my_bet:{"5":2,"10":2,"50":1,"100":2},opp_bet:{"5":2,"10":1,"50":1,"100":2},columns:["stage","turn","blind","bet","my_chips","opp_chips","community","outcome"]},
+];
+
+const ALL_COLUMNS = ["stage","turn","blind","community","bet","my_chips","opp_chips","outcome"];
+const COL_LABELS = {stage:"LS",turn:"TO",blind:"BI",community:"CC",bet:"CB",my_chips:"RCI",opp_chips:"OCI",outcome:"SO"};
+
+const grid = document.getElementById("problem-grid");
+const detailPanel = document.getElementById("detail-panel");
+const detailImg = document.getElementById("detail-img");
+const detailInfo = document.getElementById("detail-info");
+const filterBtns = document.querySelectorAll("#col-filter .filter-button");
+
+let selectedId = null;
+
+function formatChips(chips) {
+  const parts = [];
+  for (const d of ["5","10","50","100"]) {
+    const c = chips[d] || 0;
+    if (c > 0) parts.push(d + "×" + c);
+  }
+  return parts.length ? parts.join("  ") : "—";
+}
+
+function renderDetail(p) {
+  detailImg.src = `../assets/images/perception-problems/${p.id}.jpg`;
+  detailImg.alt = `Agent view for ${p.id} target state`;
+
+  const community = p.community.length ? p.community.join(" ") : "—";
+  const turn = p.turn ? "Robot" : "Opponent";
+  const stageDisplay = p.stage.replace("_", " ");
+
+  let html = `<div class="state-field"><span class="state-field-label">Problem</span><span class="state-field-value">${p.id}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Stage</span><span class="state-field-value">${stageDisplay}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Blind</span><span class="state-field-value">${p.blind}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Turn</span><span class="state-field-value">${turn}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Community</span><span class="state-field-value">${community}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">My bet</span><span class="state-field-value">${formatChips(p.my_bet)}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Opp bet</span><span class="state-field-value">${formatChips(p.opp_bet)}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">My chips</span><span class="state-field-value">${formatChips(p.my_chips)}</span></div>`;
+  html += `<div class="state-field"><span class="state-field-label">Opp chips</span><span class="state-field-value">${formatChips(p.opp_chips)}</span></div>`;
+
+  html += `<div class="scored-columns-section"><div class="scored-columns-title">Scored columns (exact-match required)</div><div class="problem-col-tags">`;
+  for (const col of ALL_COLUMNS) {
+    const scored = p.columns.includes(col);
+    html += `<span class="col-tag${scored ? " highlight" : ""}">${COL_LABELS[col]}</span>`;
+  }
+  html += `</div></div>`;
+
+  detailInfo.innerHTML = html;
+  detailPanel.classList.add("is-open");
+}
+
+function selectProblem(id) {
+  if (selectedId === id) {
+    selectedId = null;
+    detailPanel.classList.remove("is-open");
+    grid.querySelectorAll(".problem-card").forEach(c => c.classList.remove("is-selected"));
+    return;
+  }
+  selectedId = id;
+  const p = PROBLEMS.find(x => x.id === id);
+  renderDetail(p);
+  grid.querySelectorAll(".problem-card").forEach(c => {
+    c.classList.toggle("is-selected", c.dataset.id === id);
+  });
+}
+
+function renderGrid(filter) {
+  grid.innerHTML = "";
+  selectedId = null;
+  detailPanel.classList.remove("is-open");
+
+  const items = filter === "all" ? PROBLEMS : PROBLEMS.filter(p => p.columns.includes(filter));
+  for (const p of items) {
+    const card = document.createElement("article");
+    card.className = "problem-card";
+    card.dataset.id = p.id;
+
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = `../assets/images/perception-problems/${p.id}.jpg`;
+    img.alt = `${p.id} target state`;
+    card.append(img);
+
+    const body = document.createElement("div");
+    body.className = "problem-card-body";
+
+    const header = document.createElement("div");
+    header.className = "problem-card-header";
+    const idSpan = document.createElement("span");
+    idSpan.className = "problem-card-id";
+    idSpan.textContent = p.id;
+    const stageBadge = document.createElement("span");
+    stageBadge.className = `problem-card-stage ${p.stage}`;
+    stageBadge.textContent = p.stage.replace("_", " ");
+    header.append(idSpan, stageBadge);
+    body.append(header);
+
+    const tags = document.createElement("div");
+    tags.className = "problem-col-tags";
+    for (const col of ALL_COLUMNS) {
+      const tag = document.createElement("span");
+      tag.className = `col-tag${p.columns.includes(col) ? " highlight" : ""}`;
+      tag.textContent = COL_LABELS[col];
+      tags.append(tag);
+    }
+    body.append(tags);
+
+    const meta = document.createElement("div");
+    meta.className = "problem-card-meta";
+    meta.textContent = `${p.preds} predecessor${p.preds !== 1 ? "s" : ""} · ${p.columns.length} scored fields`;
+    body.append(meta);
+
+    card.append(body);
+    card.addEventListener("click", () => selectProblem(p.id));
+    grid.append(card);
+  }
+}
+
+filterBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterBtns.forEach(b => b.classList.toggle("active", b === btn));
+    renderGrid(btn.dataset.filter);
+  });
+});
+
+renderGrid("all");
+    </script>
+</body>
+</html>

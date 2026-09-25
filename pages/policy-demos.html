@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem Policy Demos | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem primitive-level policy demo videos with model, task, condition, and outcome labels." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="data-demos.html">Data Demos</a>
+<a href="policy-demos.html">Policy Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page" id="main-content">
+<section class="detail-hero">
+<div>
+<p class="eyebrow">Policy Demos</p>
+<h1>Primitive-level policy rollout videos.</h1>
+<p>
+            These videos are policy-benchmark rollouts, not complete poker hands. Each card keeps
+            the model, task, condition, and success or failure label visible.
+          </p>
+</div>
+<img alt="DexHoldem physical policy benchmark rollout examples" class="detail-contain" loading="lazy" src="../assets/images/policy-example-grid.png"/>
+</section>
+<section class="detail-section">
+<div aria-labelledby="policy-video-title" class="policy-video-block standalone-demo-block">
+<div class="policy-video-heading">
+<div>
+<p class="demo-label">Policy Bench Rollouts</p>
+<h2 id="policy-video-title">Compressed real-world demos with model, task, and outcome labels.</h2>
+</div>
+<p>
+              Source recordings are 4K 60fps MOV files. The hosted videos are 960x540 H.264 MP4
+              previews with original filenames preserved for traceability.
+            </p>
+</div>
+<div aria-label="Policy video filters" class="policy-video-controls">
+<label>
+<span>Model</span>
+<select id="policy-model-filter"></select>
+</label>
+<label>
+<span>Outcome</span>
+<select id="policy-outcome-filter">
+<option value="all">All outcomes</option>
+<option value="Success">Success</option>
+<option value="Fail">Fail</option>
+</select>
+</label>
+<output aria-live="polite" id="policy-video-count"></output>
+</div>
+<div class="policy-video-grid" id="policy-video-grid"></div>
+</div>
+</section>
+<section class="detail-section detail-links">
+<a class="button primary" href="../index.html#demo-release">Demos</a>
+<a class="button" href="data-demos.html">Data Demos</a>
+<a class="button" href="../index.html#demo-release">Homepage Demo Release</a>
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+<script data-asset-root="../" src="../script.js"></script>
+</body>
+</html>

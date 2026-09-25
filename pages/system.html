@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem System Evaluation | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem system-level evaluation: Section 3.3 protocol, Section 4.5 GPT 5.5 + pi0 hand-level counters, and Appendix B.3 trajectory panels." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<style>
+      .traj-explorer {
+        width: min(1180px, 100%);
+        margin-bottom: 36px;
+      }
+      .traj-explorer-label {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+      .traj-preview-label {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        font-family: var(--font-mono);
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#abstract">Abstract</a>
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#system">System</a>
+<a href="../index.html#perception">Perception</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page" id="main-content">
+<section class="detail-hero">
+<div>
+<p class="eyebrow">System-level Evaluation</p>
+<h1>Three closed-loop hand-level case studies.</h1>
+<p>
+            System evaluation composes GPT 5.5 (perceiver + main agent), deterministic routing,
+            and the pi0 dexterous policy into full hand-level rollouts on the physical table.
+            Unlike the perception bench—which isolates visual state parsing—the system
+            evaluation closes the loop: every captured state feeds back into perception, routing,
+            and physical execution. This page presents the three released case-study trajectories
+            with per-state agent-view captures, predicted parsed states, and operational counters.
+          </p>
+</div>
+<img alt="DexHoldem system-level trajectory state" loading="lazy" src="../assets/images/system-level-trajectory.jpg"/>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Protocol</p>
+<h2>Perceive, route, execute.</h2>
+<p>
+            At each loop step the agent captures an image, parses it into structured game state,
+            and routes through deterministic workflow gates. Physical motion is dispatched only when
+            the scene is stable and an executable primitive is needed; otherwise the router handles
+            waiting, verification, continuation of pending multi-atom sequences, and retryable recovery.
+          </p>
+</div>
+<figure class="wide-figure">
+<img alt="DexHoldem embodied-agent system loop" class="detail-contain" loading="lazy" src="../assets/images/method.png"/>
+<figcaption>
+            The agent loads structured game-state memory and routes to a dexterous policy only
+            when the scene is stable and an executable primitive is needed.
+          </figcaption>
+</figure>
+</section>
+<section class="detail-section" id="system-level-evaluation">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Operational Counters</p>
+<h2>Operational counters.</h2>
+<p>
+            These three trajectories are case studies, not a statistically powered estimate.
+            Each row reports how many states the system captured, how many were agent-level
+            primitives versus dexterous-policy dispatches, and how many were spent waiting,
+            requesting human help, or in recovery.
+          </p>
+</div>
+<div class="table-wrap">
+<table class="leaderboard system-eval-table">
+<caption>Case studies of per-trajectory operational counters under the system-level protocol.</caption>
+<thead>
+<tr>
+<th scope="col">Agent</th>
+<th scope="col">Policy</th>
+<th scope="col">Trajectory</th>
+<th scope="col">States</th>
+<th scope="col"><abbr title="Agent Primitives">AP</abbr></th>
+<th scope="col"><abbr title="Dexterous-Policy Primitives">DPP</abbr></th>
+<th scope="col"><abbr title="Wait Actions">WA</abbr></th>
+<th scope="col"><abbr title="Human-Help">HL</abbr></th>
+<th scope="col"><abbr title="Recovery">RC</abbr></th>
+<th scope="col"><abbr title="Longest Agent Primitive">LAP</abbr></th>
+<th scope="col"><abbr title="Longest Dexterous-Policy Primitive">LDP</abbr></th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">GPT 5.5</th><td>pi0</td><td>(i)</td><td>22</td><td>8</td><td>7</td><td>7</td><td>2</td><td>1</td><td><code>view_card(L)</code></td><td><code>pick_up_left</code></td></tr>
+<tr><th scope="row">GPT 5.5</th><td>pi0</td><td>(ii)</td><td>54</td><td>13</td><td>22</td><td>26</td><td>0</td><td>1</td><td><code>collect_winnings</code></td><td><code>push_100</code></td></tr>
+<tr><th scope="row">GPT 5.5</th><td>pi0</td><td>(iii)</td><td>23</td><td>8</td><td>10</td><td>7</td><td>0</td><td>1</td><td><code>call</code></td><td><code>pick_up_left</code></td></tr>
+</tbody>
+</table>
+</div>
+<div class="detail-grid three">
+<article>
+<h3>States</h3>
+<p>Trajectory length. Hands folded at preflop are short; hands reaching the river or showdown are long.</p>
+</article>
+<article>
+<h3>AP / DPP</h3>
+<p>Dispatched agent primitives (high-level decisions) and dexterous-policy primitives (physical motor commands). Reflects trajectory complexity.</p>
+</article>
+<article>
+<h3>WA</h3>
+<p>Wait-branch count. Elevated WA suggests over-sensitivity to scene motion or conservative completion/stage-transition judgment.</p>
+</article>
+<article>
+<h3>HL / RC</h3>
+<p>Human-help escalations and recovery dispatches. HL marks unrecoverable states; RC marks retryable primitive failures.</p>
+</article>
+<article>
+<h3>LAP</h3>
+<p>Agent primitive occupying the most consecutive states. Identifies agent-level bottlenecks such as stuck multi-atom sequences.</p>
+</article>
+<article>
+<h3>LDP</h3>
+<p>Dexterous-policy primitive occupying the most consecutive states. Pinpoints where physical execution is slow or repeatedly fails verification.</p>
+</article>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Trajectory Previews</p>
+</div>
+<div class="traj-explorer" id="traj-i">
+<div class="traj-explorer-label">Trajectory (i) — 22 states. Hole cards, two human-help escalations, raise, check, check, call.</div>
+<div aria-label="Trajectory (i) timeline" class="problem-timeline" data-traj="i" role="listbox"></div>
+<div class="problem-detail">
+<figure class="problem-preview">
+<img alt="Agent view for trajectory (i)" class="traj-preview-img" src="../assets/images/system-traj/run_i/s0.jpg"/>
+<figcaption class="traj-preview-label"></figcaption>
+</figure>
+<div class="problem-state-info traj-state-info"></div>
+</div>
+</div>
+<div class="traj-explorer" id="traj-ii">
+<div class="traj-explorer-label">Trajectory (ii) — 54 states. Full hand through all-in, showdown, and collect winnings.</div>
+<div aria-label="Trajectory (ii) timeline" class="problem-timeline" data-traj="ii" role="listbox"></div>
+<div class="problem-detail">
+<figure class="problem-preview">
+<img alt="Agent view for trajectory (ii)" class="traj-preview-img" src="../assets/images/system-traj/run_ii/s0.jpg"/>
+<figcaption class="traj-preview-label"></figcaption>
+</figure>
+<div class="problem-state-info traj-state-info"></div>
+</div>
+</div>
+<div class="traj-explorer" id="traj-iii">
+<div class="traj-explorer-label">Trajectory (iii) — 23 states. Raise, check, call, showdown with both cards revealed.</div>
+<div aria-label="Trajectory (iii) timeline" class="problem-timeline" data-traj="iii" role="listbox"></div>
+<div class="problem-detail">
+<figure class="problem-preview">
+<img alt="Agent view for trajectory (iii)" class="traj-preview-img" src="../assets/images/system-traj/run_iii/s0.jpg"/>
+<figcaption class="traj-preview-label"></figcaption>
+</figure>
+<div class="problem-state-info traj-state-info"></div>
+</div>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Label Legend</p>
+<h2>State-label grammar.</h2>
+</div>
+<div class="detail-grid two">
+<article>
+<h3 style="color:var(--blue);">Agent Choice</h3>
+<p>
+<code>view_card</code>, <code>raise</code>, <code>check</code>, <code>call</code>,
+              <code>all_in</code>, <code>show_card</code>, <code>collect_winnings</code>—the
+              main agent selects a new primitive.
+            </p>
+</article>
+<article>
+<h3 style="color:#94a3b8;">Wait</h3>
+<p>
+<code>wait (scene)</code>, <code>wait (acting)</code>, <code>wait (turn)</code>—the
+              router pauses because the scene is unstable, the robot is still moving, or it is
+              the opponent's turn.
+            </p>
+</article>
+<article>
+<h3 style="color:var(--gold);">Router Gate</h3>
+<p>
+<code>cont.</code>, <code>cache hole card</code>, <code>verify</code>,
+              <code>complete</code>, <code>retry</code>, <code>end</code>—deterministic
+              routing advances or closes a pending primitive.
+            </p>
+</article>
+<article>
+<h3 style="color:var(--accent);">Human Help</h3>
+<p>
+<code>request_human</code>—the agent escalates when the scene cannot be resolved
+              automatically (e.g. a misplaced card).
+            </p>
+</article>
+</div>
+</section>
+<section class="detail-section detail-links">
+<a class="button primary" href="../index.html#system">Back To System Overview</a>
+<a class="button" href="agent.html">Agent Evaluation</a>
+<a class="button" href="policy.html">Policy Details</a>
+
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+<script>
+const TRAJECTORIES = {
+  i: {
+    dir: "../assets/images/system-traj/run_i",
+    states: [
+      {id:"s0",label:"view_card(L)"},
+      {id:"s1",label:"wait (scene)"},
+      {id:"s2",label:"cache hole card"},
+      {id:"s3",label:"cont."},
+      {id:"s4",label:"wait (scene)"},
+      {id:"s5",label:"request_human"},
+      {id:"s6",label:"view_card(R)"},
+      {id:"s7",label:"cache hole card"},
+      {id:"s8",label:"cont."},
+      {id:"s9",label:"request_human"},
+      {id:"s10",label:"raise (10)"},
+      {id:"s11",label:"wait (scene)"},
+      {id:"s12",label:"verify"},
+      {id:"s13",label:"check"},
+      {id:"s14",label:"check"},
+      {id:"s15",label:"wait (turn)"},
+      {id:"s16",label:"wait (turn)"},
+      {id:"s17",label:"call"},
+      {id:"s18",label:"wait (scene)"},
+      {id:"s19",label:"wait (scene)"},
+      {id:"s20",label:"cont."},
+      {id:"s21",label:"end"}
+    ]
+  },
+  ii: {
+    dir: "../assets/images/system-traj/run_ii",
+    states: [
+      {id:"s0",label:"view_card(L)"},
+      {id:"s1",label:"wait (acting)"},
+      {id:"s2",label:"wait (acting)"},
+      {id:"s3",label:"cont."},
+      {id:"s4",label:"wait (acting)"},
+      {id:"s5",label:"view_card(R)"},
+      {id:"s6",label:"wait (acting)"},
+      {id:"s7",label:"cont."},
+      {id:"s8",label:"wait (acting)"},
+      {id:"s9",label:"raise (5)"},
+      {id:"s10",label:"wait (acting)"},
+      {id:"s11",label:"raise (105)"},
+      {id:"s12",label:"wait (turn)"},
+      {id:"s13",label:"wait (turn)"},
+      {id:"s14",label:"wait (turn)"},
+      {id:"s15",label:"check"},
+      {id:"s16",label:"raise (100)"},
+      {id:"s17",label:"wait (acting)"},
+      {id:"s18",label:"wait (acting)"},
+      {id:"s19",label:"wait (turn)"},
+      {id:"s20",label:"wait (turn)"},
+      {id:"s21",label:"wait (turn)"},
+      {id:"s22",label:"wait (turn)"},
+      {id:"s23",label:"check"},
+      {id:"s24",label:"raise (100)"},
+      {id:"s25",label:"wait (acting)"},
+      {id:"s26",label:"check"},
+      {id:"s27",label:"all_in"},
+      {id:"s28",label:"wait (scene)"},
+      {id:"s29",label:"wait (scene)"},
+      {id:"s30",label:"cont."},
+      {id:"s31",label:"cont."},
+      {id:"s32",label:"—"},
+      {id:"s33",label:"wait (turn)"},
+      {id:"s34",label:"show_card(L)"},
+      {id:"s35",label:"cont."},
+      {id:"s36",label:"show_card(R)"},
+      {id:"s37",label:"cont."},
+      {id:"s38",label:"wait (acting)"},
+      {id:"s39",label:"cont."},
+      {id:"s40",label:"—"},
+      {id:"s41",label:"collect_winnings"},
+      {id:"s42",label:"wait (acting)"},
+      {id:"s43",label:"cont."},
+      {id:"s44",label:"wait (acting)"},
+      {id:"s45",label:"cont."},
+      {id:"s46",label:"wait (acting)"},
+      {id:"s47",label:"cont."},
+      {id:"s48",label:"wait (acting)"},
+      {id:"s49",label:"cont."},
+      {id:"s50",label:"wait (acting)"},
+      {id:"s51",label:"wait (acting)"},
+      {id:"s52",label:"cont."},
+      {id:"s53",label:"end"}
+    ]
+  },
+  iii: {
+    dir: "../assets/images/system-traj/run_iii",
+    states: [
+      {id:"s0",label:"view_card(L)"},
+      {id:"s1",label:"wait (scene)"},
+      {id:"s2",label:"wait (scene)"},
+      {id:"s3",label:"cont."},
+      {id:"s4",label:"wait (scene)"},
+      {id:"s5",label:"view_card(R)"},
+      {id:"s6",label:"cont."},
+      {id:"s7",label:"raise (10)"},
+      {id:"s8",label:"wait (scene)"},
+      {id:"s9",label:"complete"},
+      {id:"s10",label:"check"},
+      {id:"s11",label:"check"},
+      {id:"s12",label:"call"},
+      {id:"s13",label:"wait (scene)"},
+      {id:"s14",label:"wait (scene)"},
+      {id:"s15",label:"retry"},
+      {id:"s16",label:"wait (scene)"},
+      {id:"s17",label:"complete"},
+      {id:"s18",label:"show_card(L)"},
+      {id:"s19",label:"cont."},
+      {id:"s20",label:"complete"},
+      {id:"s21",label:"show_card(R)"},
+      {id:"s22",label:"complete"}
+    ]
+  }
+};
+
+const PARSED_STATES = {"i":[{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"down","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"down","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×2  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"10×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×3  10×2  50×2  100×2","my_bet":"10×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×2  50×2  100×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×2  50×2  100×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×2  50×2  100×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×1  50×2  100×2","my_bet":"10×1","opp_bet":"5×2  10×1","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×1  50×2  100×2","my_bet":"10×1","opp_bet":"5×2  10×1","outcome":"not_showdown","stable":false},{"stage":"acting","turn":"Robot","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×1  50×2  100×2","my_bet":"10×1","opp_bet":"5×2  10×1","outcome":"not_showdown","stable":false},{"stage":"to_recover","turn":"Robot","blind":"big blind","community":"2s Js Ad","my_chips":"5×3  10×1  50×2  100×2","opp_chips":"5×1  10×1  50×2  100×2","my_bet":"10×1","opp_bet":"5×2  10×1","outcome":"not_showdown","stable":true},null],"ii":[{"stage":"idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×4  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×3  100×3","opp_chips":"5×1  10×4  100×4","my_bet":"5×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"—","my_chips":"5×3  100×2","opp_chips":"5×1  10×4  100×4","my_bet":"5×1  100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"—","my_chips":"5×3  100×2","opp_chips":"5×1  10×4  100×4","my_bet":"5×1  100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"—","my_chips":"5×3  100×2","opp_chips":"5×1  10×4  100×4","my_bet":"5×1  100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"—","my_chips":"5×3  100×2","opp_chips":"10×4  100×3","my_bet":"5×1  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×2","opp_chips":"10×4  100×3","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×2","opp_chips":"10×4  100×3","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×2","opp_chips":"10×4  100×3","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"100×1","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"5×1  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"2c 2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"2c 2s Js Ah","my_chips":"5×3  100×1","opp_chips":"10×4  100×3","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"2c 2s Js Ah","my_chips":"5×3","opp_chips":"10×4  100×2","my_bet":"5×1  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"5×3","opp_chips":"10×4  100×2","my_bet":"5×1  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"5×3","opp_chips":"10×4  100×2","my_bet":"5×1  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":false},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"5×2","opp_chips":"10×4  100×2","my_bet":"5×2  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"5×2","opp_chips":"10×4  100×2","my_bet":"5×2  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"5×1","opp_chips":"10×4  100×2","my_bet":"5×3  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×4  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×4  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  100×1","outcome":"not_showdown","stable":true},{"stage":"show_hand","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"to_recover","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"not_showdown","stable":true},{"stage":"win","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"robot_win","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2  100×1","outcome":"robot_win","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2","outcome":"robot_win","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×2","outcome":"robot_win","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×1","outcome":"robot_win","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1  10×1","outcome":"robot_win","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1","outcome":"robot_win","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"5×1","outcome":"robot_win","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"—","outcome":"robot_win","stable":true},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"—","outcome":"robot_win","stable":false},{"stage":"acting","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4  100×1","opp_bet":"—","outcome":"robot_win","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"5×4","opp_bet":"—","outcome":"robot_win","stable":true},{"stage":"idle","turn":"Opponent","blind":"small blind","community":"As 2c 2s Js Ah","my_chips":"—","opp_chips":"10×2  100×2","my_bet":"—","opp_bet":"—","outcome":"robot_win","stable":true}],"iii":[{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"10×1  100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"—","opp_bet":"—","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"—","my_chips":"100×1","opp_chips":"5×2  10×1  50×1  100×1","my_bet":"10×1","opp_bet":"—","outcome":"not_showdown","stable":false},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"100×1","opp_chips":"50×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"—","my_chips":"100×1","opp_chips":"50×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"100×1","opp_chips":"50×2","my_bet":"10×1","opp_bet":"5×2","outcome":"not_showdown","stable":true},{"stage":"idle","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"100×1","opp_chips":"—","my_bet":"10×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":false},{"stage":"acting","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":false},{"stage":"to_recover","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"100×1","opp_chips":"—","my_bet":"10×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":true},{"stage":"acting","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"100×1","opp_chips":"—","my_bet":"10×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":false},{"stage":"idle","turn":"Robot","blind":"big blind","community":"4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"not_showdown","stable":true},{"stage":"show_hand","turn":"Robot","blind":"big blind","community":"2d 3d 4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"pending_robot_reveal","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"2d 3d 4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"pending_robot_reveal","stable":true},{"stage":"atom_idle","turn":"Robot","blind":"big blind","community":"2d 3d 4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"pending_robot_reveal","stable":true},{"stage":"show_hand","turn":"Robot","blind":"big blind","community":"2d 3d 4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"pending_robot_reveal","stable":true},{"stage":"lose","turn":"Robot","blind":"big blind","community":"2d 3d 4d 3c 4c","my_chips":"—","opp_chips":"—","my_bet":"10×1  100×1","opp_bet":"5×2  50×2","outcome":"opponent_win","stable":true}]};
+
+function renderStateInfo(panel, state) {
+  if (!state) { panel.innerHTML = "<em>No parsed state available.</em>"; return; }
+  const fields = [
+    ["Stage", state.stage],
+    ["Stable", state.stable ? "yes" : "no"],
+    ["Turn", state.turn],
+    ["Blind", state.blind],
+    ["Community", state.community],
+    ["My bet", state.my_bet],
+    ["Opp bet", state.opp_bet],
+    ["My chips", state.my_chips],
+    ["Opp chips", state.opp_chips],
+    ["Outcome", state.outcome],
+  ];
+  panel.innerHTML = fields.map(([l, v]) =>
+    `<div class="state-field"><span class="state-field-label">${l}</span><span class="state-field-value">${v}</span></div>`
+  ).join("");
+}
+
+function actionCategory(label) {
+  if (label.startsWith("wait")) return "wait";
+  if (label === "cont." || label === "verify" || label === "complete" || label === "retry" || label === "cache hole card" || label === "end" || label === "—") return "router";
+  if (label === "request_human") return "help";
+  return "action";
+}
+
+const CAT_COLORS = {
+  action: "var(--blue)",
+  wait: "#94a3b8",
+  router: "var(--gold)",
+  help: "var(--accent)"
+};
+
+for (const [key, traj] of Object.entries(TRAJECTORIES)) {
+  const container = document.querySelector(`#traj-${key}`);
+  const timeline = container.querySelector(".problem-timeline");
+  const img = container.querySelector(".traj-preview-img");
+  const caption = container.querySelector(".traj-preview-label");
+  const statePanel = container.querySelector(".traj-state-info");
+  let activeIdx = 0;
+
+  traj.states.forEach((s, idx) => {
+    const dot = document.createElement("button");
+    dot.className = "state-dot" + (idx === 0 ? " is-active" : "");
+    dot.type = "button";
+    dot.setAttribute("role", "option");
+    dot.setAttribute("aria-label", `${s.id}: ${s.label}`);
+    dot.title = `${s.id}: ${s.label}`;
+    const cat = actionCategory(s.label);
+    const color = CAT_COLORS[cat];
+    dot.style.borderColor = color;
+    if (idx === 0) dot.style.background = color;
+
+    dot.addEventListener("click", () => selectState(key, idx));
+    dot.addEventListener("mouseenter", () => selectState(key, idx));
+    timeline.append(dot);
+  });
+
+  caption.textContent = `s0: ${traj.states[0].label}`;
+  renderStateInfo(statePanel, PARSED_STATES[key][0]);
+
+  function selectState(trajKey, idx) {
+    if (trajKey !== key) return;
+    const dots = timeline.querySelectorAll(".state-dot");
+    dots[activeIdx].style.background = "";
+    dots[activeIdx].classList.remove("is-active");
+    activeIdx = idx;
+    const s = traj.states[idx];
+    const cat = actionCategory(s.label);
+    const color = CAT_COLORS[cat];
+    dots[idx].classList.add("is-active");
+    dots[idx].style.background = color;
+    img.src = `${traj.dir}/${s.id}.jpg`;
+    img.alt = `Agent view ${s.id}: ${s.label}`;
+    caption.textContent = `${s.id}: ${s.label}`;
+    renderStateInfo(statePanel, PARSED_STATES[key][idx] || null);
+  }
+
+  window[`selectTraj_${key}`] = selectState;
+}
+    </script>
+</body>
+</html>

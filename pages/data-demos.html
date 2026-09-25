@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem Data Demos | Anonymous ICLR Supplement</title>
+<meta content="Representative DexHoldem dataset data demos: one raw data point per task with three synchronized RGB camera preview slots." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="data-demos.html">Data Demos</a>
+<a href="policy-demos.html">Policy Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page dataset-video-page" id="main-content">
+<section class="detail-hero dataset-video-hero">
+<div>
+<p class="eyebrow">Data Demos</p>
+<h1>One sample per task, three RGB camera views.</h1>
+<p>
+            This interface indexes the DexHoldem dataset release by task and displays the three
+            camera-video previews for one representative raw trajectory from each task.
+          </p>
+</div>
+<div aria-label="Dataset source" class="dataset-source-panel">
+<p class="demo-label">Source</p>
+<h2>Anonymous review dataset</h2>
+<dl>
+<div><dt>Tasks</dt><dd>14</dd></div>
+<div><dt>Sample</dt><dd>data_0001.npz</dd></div>
+<div><dt>RGB Cameras</dt><dd>3</dd></div>
+<div><dt>Preview Source</dt><dd>Representative demonstration subset</dd></div>
+</dl>
+
+</div>
+</section>
+<section class="detail-section dataset-video-intro">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Representative Data Points</p>
+<h2>Each task card is wired to the same original trajectory file used by the compact subset.</h2>
+<p>Explore one representative demonstration per task with three synchronized camera views. Use the search and group filters to find a primitive, then play its camera previews together.</p>
+</div>
+<div aria-label="Dataset video filters" class="dataset-video-toolbar">
+<label>
+<span>Search task</span>
+<input autocomplete="off" id="dataset-task-search" placeholder="Search task name" type="search"/>
+</label>
+<label>
+<span>Group</span>
+<select id="dataset-task-group">
+<option value="all">All tasks</option>
+<option value="card">Card primitives</option>
+<option value="chip">Chip primitives</option>
+</select>
+</label>
+<output aria-live="polite" id="dataset-task-count"></output>
+</div>
+</section>
+<section aria-labelledby="dataset-video-browser-title" class="detail-section dataset-video-browser">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Camera Triplets</p>
+<h2 id="dataset-video-browser-title">Three synchronized RGB streams per selected episode.</h2>
+</div>
+<div class="dataset-task-list" id="dataset-task-list"></div>
+</section>
+
+<section class="detail-section detail-links">
+<a class="button primary" href="../index.html#demo-release">Demos</a>
+<a class="button" href="policy-demos.html">Policy Demos</a>
+<a class="button" href="../index.html#demo-release">Homepage Demo Release</a>
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+<script src="../dataset-videos.js"></script>
+</body>
+</html>

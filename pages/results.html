@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem Results | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem benchmark results: policy leaderboard over 80 physical trials, agentic perception accuracy across 36 tabletop states, and diagnostic figures." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page" id="main-content">
+<section class="detail-hero">
+<div>
+<p class="eyebrow">Benchmark Results</p>
+<h1>Policy and Perception Evaluation</h1>
+<p>
+            Policy results are measured over 80 real-world primitive rollouts per model.
+            Perception results use strict problem-level exact-match over 36 tabletop states,
+            plus field-wise diagnostic accuracies.
+          </p>
+</div>
+<img alt="DexHoldem aggregate policy result overview" class="detail-contain" loading="lazy" src="../assets/images/policy-results-teaser.png"/>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Policy Benchmark</p>
+<h2>Aggregate physical policy results over 80 real-world trials per model.</h2>
+<p>
+            Nine policies spanning two model families are evaluated under the same
+            primitive schedule, observation interface, and physical scoring rubric. The table
+            reports raw outcome counts (SP, DC, TF, DF) and the two aggregate rates: scene-preserving
+            success rate (SPSR) and task completion rate (TCR).
+          </p>
+</div>
+<div class="detail-grid four">
+<article>
+<h3>SP</h3>
+<p>Scene-preserving success: the primitive is completed and the tabletop remains usable.</p>
+</article>
+<article>
+<h3>DC</h3>
+<p>Disruptive completion: the goal is achieved but the scene is disturbed enough to prevent continuation.</p>
+</article>
+<article>
+<h3>TF</h3>
+<p>Task failure: the primitive is not completed, but the scene remains stable for retry.</p>
+</article>
+<article>
+<h3>DF</h3>
+<p>Disruptive failure: the primitive fails and the environment must be reset.</p>
+</article>
+</div>
+</section>
+<section class="detail-section">
+<div class="table-wrap">
+<table class="leaderboard">
+<caption>Aggregate policy-model results over 80 real-world primitive-evaluation trials per policy.</caption>
+<thead>
+<tr>
+<th scope="col">Policy</th>
+<th scope="col">Family</th>
+<th scope="col">Params</th>
+<th scope="col"><abbr title="Scene-Preserving Success">SP</abbr></th>
+<th scope="col"><abbr title="Disruptive Completion">DC</abbr></th>
+<th scope="col"><abbr title="Task Failure">TF</abbr></th>
+<th scope="col"><abbr title="Disruptive Failure">DF</abbr></th>
+<th scope="col">N</th>
+<th scope="col"><abbr title="Scene-Preserving Success Rate">SPSR</abbr></th>
+<th scope="col"><abbr title="Task Completion Rate">TCR</abbr></th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">π<sub>0.5</sub></th><td>VLA</td><td>2.94B</td><td>38</td><td>11</td><td>31</td><td>0</td><td>80</td><td>47.5%</td><td>61.2%</td></tr>
+<tr><th scope="row">π<sub>0</sub></th><td>VLA</td><td>2.82B</td><td>38</td><td>8</td><td>33</td><td>1</td><td>80</td><td>47.5%</td><td>57.5%</td></tr>
+<tr><th scope="row">RDT</th><td>Robot-pretrained</td><td>1.23B</td><td>24</td><td>13</td><td>40</td><td>3</td><td>80</td><td>30.0%</td><td>46.2%</td></tr>
+<tr><th scope="row">DP (DINO)</th><td>Task-trained</td><td>128M</td><td>21</td><td>8</td><td>48</td><td>3</td><td>80</td><td>26.2%</td><td>36.2%</td></tr>
+<tr><th scope="row">DP-Transformer</th><td>Task-trained</td><td>128M</td><td>11</td><td>5</td><td>46</td><td>18</td><td>80</td><td>13.8%</td><td>20.0%</td></tr>
+<tr><th scope="row">RDT-small</th><td>Task-trained</td><td>165M</td><td>11</td><td>3</td><td>59</td><td>7</td><td>80</td><td>13.8%</td><td>17.5%</td></tr>
+<tr><th scope="row">ACT</th><td>Task-trained</td><td>72.8M</td><td>8</td><td>4</td><td>67</td><td>1</td><td>80</td><td>10.0%</td><td>15.0%</td></tr>
+<tr><th scope="row">BAKU</th><td>Task-trained</td><td>39.4M</td><td>5</td><td>5</td><td>67</td><td>3</td><td>80</td><td>6.2%</td><td>12.5%</td></tr>
+<tr><th scope="row">DP-UNet</th><td>Task-trained</td><td>74.4M</td><td>1</td><td>0</td><td>79</td><td>0</td><td>80</td><td>1.2%</td><td>1.2%</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="detail-section">
+<figure class="wide-figure">
+<img alt="DexHoldem physical policy benchmark success and failure examples" loading="lazy" src="../assets/images/policy-example-grid.png"/>
+<figcaption>
+            Representative real-world policy rollouts for view, show, push, and pull primitives.
+            Success is not just object motion: non-target cards and chips must remain usable for
+            later tabletop interaction.
+          </figcaption>
+</figure>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Policy Analysis</p>
+<h2>Pretraining scale, model size, and task completion.</h2>
+<p>
+            The bubble chart maps each policy by pretraining data scale (x-axis), policy-only
+            parameter count (bubble size), and physical task completion rate (y-axis).
+            VLA-family models with large-scale robot pretraining occupy the upper right; task-trained
+            baselines cluster toward the lower left.
+          </p>
+</div>
+<div class="detail-grid two policy-figure-grid">
+<figure class="wide-figure">
+<img alt="DexHoldem model scale and policy completion chart" loading="lazy" src="../assets/images/model-scale-success.png"/>
+<figcaption>
+              Model family, pretraining scale, policy-only parameter count, and physical task
+              completion rate over the shared 80-trial primitive schedule.
+            </figcaption>
+</figure>
+<figure class="wide-figure">
+<img alt="Aggregate policy benchmark overview across pretrained and task-trained policy families" loading="lazy" src="../assets/images/policy-results-teaser.png"/>
+<figcaption>
+              Aggregate policy benchmark overview across pretrained and task-trained policy families.
+            </figcaption>
+</figure>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">RDT Scaling Diagnostics</p>
+<h2>Pretraining data scale and fine-tuning loss under ablation.</h2>
+<p>
+            Two diagnostic views isolate how gripper-pretrained initialization interacts with
+            DexHoldem-specific fine-tuning data. The left panel tracks physical task completion
+            under data-ratio ablation; the right panel shows the corresponding final validation loss.
+          </p>
+</div>
+<div class="detail-grid two policy-figure-grid">
+<figure class="wide-figure">
+<img alt="RDT pretraining data scaling chart" loading="lazy" src="../assets/images/rdt-pretraining-scaling.png"/>
+<figcaption>
+              RDT pretraining data-scaling diagnostics on DexHoldem trajectories.
+            </figcaption>
+</figure>
+<figure class="wide-figure">
+<img alt="RDT fine-tuning final validation loss across data ratios" loading="lazy" src="../assets/images/rdt-pretraining-final-loss.png"/>
+<figcaption>
+              RDT final validation loss under DexHoldem data-scaling ablations.
+            </figcaption>
+</figure>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Perception Benchmark</p>
+<h2>Agentic perception accuracy across frontier vision-language models.</h2>
+<p>
+            Each perceiver is deployed inside its native coding-agent harness and evaluated on
+            36 real-deployment tabletop states. Overall is strict problem-level exact-match;
+            field-wise columns report per-field accuracy on applicable subsets. The best
+            field-wise average is 66.8% (GPT 5.5) while the best strict exact-match is
+            34.3% (Opus 4.7).
+          </p>
+</div>
+<div class="table-wrap">
+<table class="leaderboard perception-results">
+<caption>Agentic perception semantic accuracy. Overall is strict exact-match over 36 problems; other columns are field-wise accuracies on applicable subsets.</caption>
+<thead>
+<tr>
+<th scope="col">Harness</th>
+<th scope="col">Perceiver</th>
+<th scope="col">Overall</th>
+<th scope="col"><abbr title="Loop Stage">LS</abbr></th>
+<th scope="col"><abbr title="Turn Ownership">TO</abbr></th>
+<th scope="col"><abbr title="Blind Information">BI</abbr></th>
+<th scope="col"><abbr title="Community Cards">CC</abbr></th>
+<th scope="col"><abbr title="Current Bets">CB</abbr></th>
+<th scope="col"><abbr title="Robot Chip Inventory">RCI</abbr></th>
+<th scope="col"><abbr title="Opponent Chip Inventory">OCI</abbr></th>
+<th scope="col"><abbr title="Showdown Outcome">SO</abbr></th>
+<th scope="col"><abbr title="Field-wise Average">Avg</abbr></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.5</td>
+<td>31.5</td>
+<td>72.2</td>
+<td>80.6</td>
+<td>100.0</td>
+<td>61.5</td>
+<td>45.8</td>
+<td>62.5</td>
+<td>35.4</td>
+<td>76.2</td>
+<td><strong>66.8</strong></td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4</td>
+<td>31.5</td>
+<td>65.7</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>31.2</td>
+<td>56.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>54.5</td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4 mini</td>
+<td>25.9</td>
+<td>56.5</td>
+<td>94.4</td>
+<td>99.1</td>
+<td>33.3</td>
+<td>14.6</td>
+<td>29.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>49.2</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Opus 4.7</td>
+<td><strong>34.3</strong></td>
+<td>43.5</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>43.6</td>
+<td>31.2</td>
+<td>37.5</td>
+<td>43.8</td>
+<td>0.0</td>
+<td>49.1</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Sonnet 4.6</td>
+<td>25.0</td>
+<td>46.3</td>
+<td>88.0</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>10.4</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>14.3</td>
+<td>41.8</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Haiku 4.5</td>
+<td>13.9</td>
+<td>47.2</td>
+<td>68.5</td>
+<td>91.7</td>
+<td>35.9</td>
+<td>12.5</td>
+<td>25.0</td>
+<td>18.8</td>
+<td>0.0</td>
+<td>37.4</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3 Flash</td>
+<td>20.4</td>
+<td>63.9</td>
+<td>77.8</td>
+<td>100.0</td>
+<td>28.2</td>
+<td>18.8</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>71.4</td>
+<td>51.5</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3.1 Flash L.</td>
+<td>10.2</td>
+<td>27.8</td>
+<td>73.1</td>
+<td>94.4</td>
+<td>28.2</td>
+<td>12.5</td>
+<td>22.9</td>
+<td>14.6</td>
+<td>0.0</td>
+<td>34.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Perception Bottlenecks</p>
+<h2>Field-wise accuracy reveals where perceivers struggle most.</h2>
+</div>
+<div class="detail-grid four">
+<article>
+<h3>Blind / Turn</h3>
+<p>Blind information (BI) and turn ownership (TO) are near-ceiling for most models, since they rely on game-flow reasoning rather than fine-grained visual parsing.</p>
+</article>
+<article>
+<h3>Community Cards</h3>
+<p>Community card recognition (CC) ranges from 23% to 62%, reflecting difficulty in reading partially occluded or angled card faces from the agent view.</p>
+</article>
+<article>
+<h3>Chip Counting</h3>
+<p>Current bets (CB) and chip inventories (RCI, OCI) are the hardest fields, requiring the perceiver to locate, identify, and count physical chip stacks.</p>
+</article>
+<article>
+<h3>Showdown</h3>
+<p>Showdown outcome (SO) is binary but context-dependent: some models score 0% because they never detect the opponent folding or the hand concluding.</p>
+</article>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Key Observations</p>
+<h2>What the results reveal about current dexterous embodied systems.</h2>
+</div>
+<div class="detail-grid three">
+<article>
+<h3>VLA Advantage</h3>
+<p>
+              Large-scale robot-pretrained VLA policies (pi0.5, pi0) achieve the highest task
+              completion rates. Pretraining on diverse manipulation data transfers meaningfully
+              to the ShadowHand domain despite the 30-DOF action-space gap.
+            </p>
+</article>
+<article>
+<h3>Scene Preservation Gap</h3>
+<p>
+              Even the best policy shows a 14-point gap between task completion (61.2%) and
+              scene-preserving success (47.5%). Disruptive completions are common: the target
+              object moves correctly but surrounding cards or chips are displaced.
+            </p>
+</article>
+<article>
+<h3>Perception Ceiling</h3>
+<p>
+              No perceiver exceeds 34.3% strict exact-match. The gap between field-wise average
+              (66.8%) and exact-match shows that errors across different fields compound: getting
+              every field right simultaneously remains challenging.
+            </p>
+</article>
+</div>
+</section>
+<section class="detail-section detail-links">
+<a class="button primary" href="../index.html#results">Back To Main Results</a>
+<a class="button" href="policy.html">Policy Details</a>
+<a class="button" href="agent.html">Perception Details</a>
+<a class="button" href="system.html">System Evaluation</a>
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+</body>
+</html>

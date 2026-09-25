@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem: Playing Texas Hold'em with Dexterous Embodied System | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem is a project page for real-world ShadowHand tabletop manipulation, agentic perception, and embodied Texas Hold'em-style system evaluation." name="description"/>
+<meta content="DexHoldem" property="og:title"/>
+<meta content="A real-world ShadowHand benchmark coupling dexterous card-and-chip manipulation with embodied-agent perception and routing." property="og:description"/>
+<meta content="assets/images/teaser.png" property="og:image"/>
+<link href="assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="styles.css?v=20260519-scroll-demo" rel="stylesheet"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body id="top">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+<a aria-label="DexHoldem home" class="brand" href="#top">
+<span class="brand-mark image-mark"><img alt="" src="assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="#abstract">Abstract</a>
+<a href="#benchmark">Benchmark</a>
+<a href="#system">System</a>
+<a href="#perception">Perception</a>
+<a href="#results">Results</a>
+<a href="#demo-release">Demos</a>
+<a href="#resources">Resources</a>
+</nav>
+</header>
+<main id="main-content">
+<section aria-labelledby="hero-title" class="hero">
+<div class="hero-content">
+<h1 id="hero-title">
+<span class="title-main">DexHoldem</span>
+<span class="title-tail">Playing Texas Hold'em with Dexterous Embodied System</span>
+</h1>
+<p class="authors">Anonymous Authors</p>
+<p class="author-note">Anonymous supplementary material for ICLR review.</p>
+<div aria-label="Project links" class="hero-actions">
+
+
+
+<a class="button" href="index.html#demo-release">Demos</a>
+<a class="button" href="pages/data-demos.html">Data Demos</a>
+<a class="button" href="pages/policy-demos.html">Policy Demos</a>
+
+
+
+
+</div>
+</div>
+<dl aria-label="Benchmark statistics" class="hero-metrics">
+<div>
+<dd>1,470</dd>
+<dt>teleoperated demonstrations</dt>
+</div>
+<div>
+<dd>14</dd>
+<dt>Texas Hold'em style primitives</dt>
+</div>
+<div>
+<dd>36</dd>
+<dt>agentic perception problems</dt>
+</div>
+<div>
+<dd>3</dd>
+<dt>system-level case studies</dt>
+</div>
+</dl>
+</section>
+
+<section class="section tight" id="abstract">
+<div class="section-heading">
+<p class="eyebrow">Abstract</p>
+</div>
+<div class="abstract-body">
+<p>
+            We introduce <strong>DexHoldem</strong>, a real-world benchmark for dexterous hand
+            embodied systems built around Texas Hold'em-style tabletop interaction. DexHoldem
+            includes 1,470 teleoperated demonstrations across 14 card and chip action primitives
+            for policy training and evaluation, along with a 36-problem perception bench that
+            tests an embodied agent's ability to parse turn gates, cards, chips, bets, outcomes,
+            and robot activity from table and robot scene observations. On the current benchmark,
+            the best policy achieves 61.2% task completion and 47.5% scene-preserving success;
+            the best perceiver scores 66.8% field-wise accuracy (GPT-5.5) while strict
+            problem-level exact match remains at 34.3% (Opus 4.7). We further present three
+            full-system case studies that close the perception-to-action loop on a physical
+            table, revealing how recovery, human-help requests, and repeated primitive dispatches
+            compound during real dexterous play.
+          </p>
+</div>
+
+<figure class="teaser-figure">
+<img alt="DexHoldem teaser figure showing environment setup, system overview, policy results, and agent results" loading="lazy" src="assets/images/teaser.png"/>
+<figcaption id="teaser-title">
+<b>Figure 1:</b> <b>(a)</b> Environment setup with ShadowHand on UR10e, showing top-view, third-person, and wrist camera placements alongside the teleoperation device. <b>(b)</b> System overview: the agent perceives the table, updates game-state memory, routes through a strategy layer, and dispatches a policy primitive as the action. <b>(c)</b> Policy bench results: task completion rate versus pretraining data scale for VLA and imitation learning families. <b>(d)</b> Agent bench results: problem-level exact match and field-wise accuracy across frontier models.
+          </figcaption>
+</figure>
+</section>
+<section class="section" id="benchmark">
+<div class="section-heading">
+<p class="eyebrow">Benchmark Scope</p>
+<p>
+            Texas Hold'em tabletop interaction naturally couples the three capabilities
+            DexHoldem measures: cards and chips demand dexterous multi-finger primitives
+            (policy bench), the evolving game state—turn gates, bets, hands, outcomes—must
+            be recovered from raw scene observations (perception bench), and a full hand
+            of play requires the agent to perceive the scene, maintain game-state memory,
+            reason over state and robot activity to select an action, and dispatch
+            dexterous primitives for execution (system-level evaluation). Click below for details:
+          </p>
+</div>
+<div class="feature-grid benchmark-layers">
+<a aria-label="Open Policy Bench details" class="feature-card feature-card-link" href="pages/policy.html">
+<span class="card-index">01</span>
+<h3>Policy Bench</h3>
+<p>
+              1,470 teleoperated demonstrations across 14 card and chip action primitives
+              for training and evaluating dexterous manipulation policies.
+            </p>
+</a>
+<a aria-label="Open Perception Bench details" class="feature-card feature-card-link" href="pages/agent.html">
+<span class="card-index">02</span>
+<h3>Perception Bench</h3>
+<p>
+              36 real deployment problems evaluating an embodied agent's ability to parse
+              turn gates, cards, chips, bets, outcomes, and robot activity from scene
+              observations.
+            </p>
+</a>
+<a aria-label="Open System Evaluation details" class="feature-card feature-card-link" href="pages/system.html">
+<span class="card-index">03</span>
+<h3>System-level Evaluation</h3>
+<p>
+              Three case studies closing the perception-to-action loop on a
+              physical table, exposing real failure modes during dexterous play.
+            </p>
+</a>
+</div>
+</section>
+<section class="section" id="system">
+<div class="section-heading">
+<p class="eyebrow">Embodied System</p>
+<p>
+            The DexHoldem embodied system is implemented as a skill for coding-agent
+            harnesses (Claude Code, Gemini CLI, Codex), each binding its natively
+            supported vision-language model. The skill follows a perceive-route-execute
+            loop: the agent parses the current table image into structured game state
+            (turn gate, cards, chips, bets, robot activity), a deterministic router loads
+            persistent game-state memory—including verified hole cards and multi-step
+            action progress—validates the parsed fields, enforces safety limits, and
+            selects an action class (wait, view card, push/pull chips, show hand, or
+            request human help). The selected action is translated into instruction codes
+            that route the dexterous policy model for physical execution.
+          </p>
+</div>
+<figure class="wide-figure">
+<img alt="DexHoldem system loop showing capture, game-state memory, activity reasoning, and execution" loading="lazy" src="assets/images/method.png"/>
+<figcaption>
+<b>Figure 2:</b> DexHoldem system loop: capture tabletop observations, load and renew game-state
+            memory, reason over the activity stage, and execute the selected dexterous primitive.
+          </figcaption>
+</figure>
+</section>
+<section class="section" id="perception">
+<div class="section-heading">
+<p class="eyebrow">Agentic Perception Bench</p>
+<p>
+            Each of the 36 perception problems is a snapshot from a real system-level
+            deployment trajectory. The perceiver receives the current agent-view capture
+            together with all predecessor states as context, and must output a structured
+            state covering 8 fields: loop stage, turn ownership, blind position, community
+            cards, chip inventories, current bets, and outcome. See an example problem
+            below and full details <a href="pages/agent.html">here</a>.
+          </p>
+</div>
+<div aria-label="Perception problem explorer for p19" class="problem-explorer" id="problem-explorer">
+<div class="problem-explorer-label">Problem p19 — 32 predecessor states as context, 1 target state to predict. Hover or tap a dot to browse; the final dot is the perception target.</div>
+<div aria-label="State timeline" class="problem-timeline" id="problem-timeline" role="listbox"></div>
+<div class="problem-detail">
+<figure class="problem-preview">
+<img alt="Agent view for state s32" id="problem-preview-img" src="assets/images/perception-problem/s32.jpg"/>
+<figcaption class="problem-preview-note" id="problem-preview-note"></figcaption>
+</figure>
+<div class="problem-state-info" id="problem-state-info"></div>
+</div>
+</div>
+</section>
+<section class="section" id="results">
+<div class="section-heading">
+<p class="eyebrow">Results</p>
+<p>
+            We report three sets of results on this page: (1) aggregate policy results
+            scored by a four-level rubric over 80 real-world primitive rollouts per model,
+            (2) per-perceiver accuracy on the 36-problem perception bench with strict
+            problem-level exact match and field-wise diagnostics, and (3) RDT pretraining
+            data-scaling analysis. See the full
+            <a href="pages/results.html">results page</a> for system-level case studies
+            and detailed analysis.
+          </p>
+</div>
+<div aria-label="Policy result filters" class="leaderboard-controls">
+<button class="filter-button active" data-filter="all" type="button">All policies</button>
+<button class="filter-button" data-filter="vla" type="button">Pretrained</button>
+<button class="filter-button" data-filter="imitation" type="button">From-scratch</button>
+</div>
+<div class="table-wrap">
+<table class="leaderboard" id="leaderboard">
+<caption>Aggregate policy results over 80 real-world primitive-evaluation trials per policy.</caption>
+<thead>
+<tr>
+<th scope="col">Policy</th>
+<th scope="col">Family</th>
+<th scope="col"><span class="col-tip" data-tip="Scene-Preserving Success: primitive completed and table remains usable for subsequent actions">SP</span></th>
+<th scope="col"><span class="col-tip" data-tip="Disruptive Completion: goal achieved but execution disturbs the scene enough to prevent normal continuation">DC</span></th>
+<th scope="col"><span class="col-tip" data-tip="Task Failure: primitive not completed, but scene remains stable enough for retry">TF</span></th>
+<th scope="col"><span class="col-tip" data-tip="Disruptive Failure: primitive fails and the environment must be reset before continuing">DF</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Scene-Preserving Success Rate: counts only SP trials (SP / N)">SPSR</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Task Completion Rate: counts SP + DC trials ((SP + DC) / N)">TCR</span></th>
+</tr>
+</thead>
+<tbody>
+<tr data-family="vla">
+<th scope="row">π<sub>0.5</sub></th>
+<td>Pretrained</td>
+<td>38</td>
+<td>11</td>
+<td>31</td>
+<td>0</td>
+<td><span class="bar-value" style="--w: 47.5%;">47.5%</span></td>
+<td><span class="bar-value strong" style="--w: 61.2%;">61.2%</span></td>
+</tr>
+<tr data-family="vla">
+<th scope="row">π<sub>0</sub></th>
+<td>Pretrained</td>
+<td>38</td>
+<td>8</td>
+<td>33</td>
+<td>1</td>
+<td><span class="bar-value" style="--w: 47.5%;">47.5%</span></td>
+<td><span class="bar-value" style="--w: 57.5%;">57.5%</span></td>
+</tr>
+<tr data-family="vla">
+<th scope="row">RDT</th>
+<td>Pretrained</td>
+<td>24</td>
+<td>13</td>
+<td>40</td>
+<td>3</td>
+<td><span class="bar-value" style="--w: 30.0%;">30.0%</span></td>
+<td><span class="bar-value" style="--w: 46.2%;">46.2%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">DP (DINO)</th>
+<td>From-scratch</td>
+<td>21</td>
+<td>8</td>
+<td>48</td>
+<td>3</td>
+<td><span class="bar-value" style="--w: 26.2%;">26.2%</span></td>
+<td><span class="bar-value" style="--w: 36.2%;">36.2%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">DP-Transformer</th>
+<td>From-scratch</td>
+<td>11</td>
+<td>5</td>
+<td>46</td>
+<td>18</td>
+<td><span class="bar-value" style="--w: 13.8%;">13.8%</span></td>
+<td><span class="bar-value" style="--w: 20.0%;">20.0%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">RDT-small</th>
+<td>From-scratch</td>
+<td>11</td>
+<td>3</td>
+<td>59</td>
+<td>7</td>
+<td><span class="bar-value" style="--w: 13.8%;">13.8%</span></td>
+<td><span class="bar-value" style="--w: 17.5%;">17.5%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">ACT</th>
+<td>From-scratch</td>
+<td>8</td>
+<td>4</td>
+<td>67</td>
+<td>1</td>
+<td><span class="bar-value" style="--w: 10.0%;">10.0%</span></td>
+<td><span class="bar-value" style="--w: 15.0%;">15.0%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">BAKU</th>
+<td>From-scratch</td>
+<td>5</td>
+<td>5</td>
+<td>67</td>
+<td>3</td>
+<td><span class="bar-value" style="--w: 6.2%;">6.2%</span></td>
+<td><span class="bar-value" style="--w: 12.5%;">12.5%</span></td>
+</tr>
+<tr data-family="imitation">
+<th scope="row">DP-UNet</th>
+<td>From-scratch</td>
+<td>1</td>
+<td>0</td>
+<td>79</td>
+<td>0</td>
+<td><span class="bar-value" style="--w: 1.2%;">1.2%</span></td>
+<td><span class="bar-value" style="--w: 1.2%;">1.2%</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrap perception-results-wrap">
+<table class="leaderboard perception-results">
+<caption>Per-perceiver accuracy on perception bench. Overall is strict problem-level exact match; sub-field columns are field-wise accuracies on applicable subsets.</caption>
+<thead>
+<tr>
+<th scope="col">Harness</th>
+<th scope="col">Perceiver</th>
+<th scope="col"><span class="col-tip" data-tip="Strict problem-level exact match: correct only when every applicable field is correct">Overall</span></th>
+<th scope="col"><span class="col-tip" data-tip="Loop Stage: whether the robot is idle, acting, waiting for atom completion, in recovery, or at a win/lose outcome">LS</span></th>
+<th scope="col"><span class="col-tip" data-tip="Turn Ownership: whether it is the robot's turn to act or the opponent's">TO</span></th>
+<th scope="col"><span class="col-tip" data-tip="Blind Information: the robot's blind position (big blind, small blind, or none)">BI</span></th>
+<th scope="col"><span class="col-tip" data-tip="Community Cards: identity of visible community cards on the table; scored only when community cards are present">CC</span></th>
+<th scope="col"><span class="col-tip" data-tip="Current Bet Chips: exact denomination-level chip counts for both players' current bets; scored on table-decision and outcome-judge problems">CB</span></th>
+<th scope="col"><span class="col-tip" data-tip="Robot Chip Inventory: exact denomination-level count of the robot's remaining chip stacks; scored on table-decision and outcome-judge problems">RCI</span></th>
+<th scope="col"><span class="col-tip" data-tip="Opponent Chip Inventory: exact denomination-level count of the opponent's remaining chips; especially difficult due to occlusion and distance">OCI</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Showdown Outcome: win, lose, or tie judgment from visible cards and game context; scored only on showdown/outcome-judge problems">SO</span></th>
+<th scope="col"><span class="col-tip tip-right" data-tip="Field-wise Average: unweighted mean of the eight sub-capability columns, excluding Overall">Avg</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.5</td>
+<td>31.5</td>
+<td>72.2</td>
+<td>80.6</td>
+<td>100.0</td>
+<td>61.5</td>
+<td>45.8</td>
+<td>62.5</td>
+<td>35.4</td>
+<td>76.2</td>
+<td><strong>66.8</strong></td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4</td>
+<td>31.5</td>
+<td>65.7</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>31.2</td>
+<td>56.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>54.5</td>
+</tr>
+<tr>
+<th scope="row">Codex</th>
+<td>GPT 5.4 mini</td>
+<td>25.9</td>
+<td>56.5</td>
+<td>94.4</td>
+<td>99.1</td>
+<td>33.3</td>
+<td>14.6</td>
+<td>29.2</td>
+<td>18.8</td>
+<td>47.6</td>
+<td>49.2</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Opus 4.7</td>
+<td><strong>34.3</strong></td>
+<td>43.5</td>
+<td>93.5</td>
+<td>100.0</td>
+<td>43.6</td>
+<td>31.2</td>
+<td>37.5</td>
+<td>43.8</td>
+<td>0.0</td>
+<td>49.1</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Sonnet 4.6</td>
+<td>25.0</td>
+<td>46.3</td>
+<td>88.0</td>
+<td>100.0</td>
+<td>23.1</td>
+<td>10.4</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>14.3</td>
+<td>41.8</td>
+</tr>
+<tr>
+<th scope="row">Claude Code</th>
+<td>Haiku 4.5</td>
+<td>13.9</td>
+<td>47.2</td>
+<td>68.5</td>
+<td>91.7</td>
+<td>35.9</td>
+<td>12.5</td>
+<td>25.0</td>
+<td>18.8</td>
+<td>0.0</td>
+<td>37.4</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3 Flash</td>
+<td>20.4</td>
+<td>63.9</td>
+<td>77.8</td>
+<td>100.0</td>
+<td>28.2</td>
+<td>18.8</td>
+<td>29.2</td>
+<td>22.9</td>
+<td>71.4</td>
+<td>51.5</td>
+</tr>
+<tr>
+<th scope="row">Gemini CLI</th>
+<td>Gemini 3.1 Flash L.</td>
+<td>10.2</td>
+<td>27.8</td>
+<td>73.1</td>
+<td>94.4</td>
+<td>28.2</td>
+<td>12.5</td>
+<td>22.9</td>
+<td>14.6</td>
+<td>0.0</td>
+<td>34.2</td>
+</tr>
+</tbody>
+</table>
+<p class="table-note">Notes: each sub-field column (LS, TO, BI, CC, CB, RCI, OCI, SO) is scored only on the subset of problems where that field applies — for example, SO is evaluated only on showdown problems, so a 0% SO does not prevent a model from achieving a higher Overall score. Overall requires exact match across all applicable fields per problem. Accuracy may vary due to harness version. Current results are evaluated at May 7, 2026.</p>
+</div>
+<div class="result-figures">
+<figure>
+<img alt="RDT pretraining data scaling chart" loading="lazy" src="assets/images/rdt-pretraining-scaling.png"/>
+<figcaption><b>Figure 3:</b> Train-time validation-loss curves for the RDT fine-tuning data-scaling study. Each panel compares random initialization against pretrained RDT across 10%, 20%, 50%, and 100% data ratios, with shaded bands denoting one standard deviation over paired seeds.</figcaption>
+</figure>
+<figure>
+<img alt="RDT final validation loss scaling chart" loading="lazy" src="assets/images/rdt-pretraining-final-loss.png"/>
+<figcaption><b>Figure 4:</b> Final validation loss for the RDT fine-tuning data-scaling probe. Random and pretrained initializations follow similar data-scaling trends. Error bars denote one standard deviation over three completed paired seeds.</figcaption>
+</figure>
+</div>
+</section>
+<section class="section" id="demo-release">
+<div class="section-heading">
+<p class="eyebrow">Demo Categories &amp; Release</p>
+<p>
+            DexHoldem demos include representative dataset camera triplets
+            and primitive-level policy benchmark rollouts.
+            The embedded block below is the policy-demo preview; each category also has a dedicated page.
+          </p>
+</div>
+<div aria-labelledby="policy-video-title" class="policy-video-block">
+<div class="policy-video-heading">
+<div>
+<p class="demo-label">Policy Bench Rollouts</p>
+<h3 id="policy-video-title">Compressed real-world demos with model, task, and outcome labels.</h3>
+</div>
+<p>
+              Source recordings are 4K 60fps MOV files. The hosted videos are 960x540 H.264 MP4
+              previews with original filenames preserved for traceability.
+            </p>
+</div>
+<div aria-label="Policy video filters" class="policy-video-controls">
+<label>
+<span>Model</span>
+<select id="policy-model-filter"></select>
+</label>
+<label>
+<span>Outcome</span>
+<select id="policy-outcome-filter">
+<option value="all">All outcomes</option>
+<option value="Success">Success</option>
+<option value="Fail">Fail</option>
+</select>
+</label>
+<output aria-live="polite" id="policy-video-count"></output>
+</div>
+<div class="policy-video-grid" id="policy-video-grid"></div>
+</div>
+<div class="demo-grid">
+<a class="demo-card" href="pages/data.html">
+<img alt="DexHoldem policy benchmark success and failure examples" class="contain-image" loading="lazy" src="assets/images/benchmark-data-examples.jpg"/>
+<div class="demo-copy">
+<p class="demo-label">Benchmark Data</p>
+<h3>Data in Benchmark</h3>
+<p>1,470 physical policy demonstrations plus 36 agent-state problems with ground-truth state, route, and action labels.</p>
+</div>
+</a>
+<a class="demo-card" href="pages/policy.html">
+<img alt="DexHoldem policy evaluation bubble chart" class="contain-image" loading="lazy" src="assets/images/model-scale-success.png"/>
+<div class="demo-copy">
+<p class="demo-label">Policy Evaluation</p>
+<h3>Policy Evaluation</h3>
+<p>Physical primitive trials compare pi-series, RDT, diffusion-policy, ACT, and BAKU policies under SPSR and TCR.</p>
+</div>
+</a>
+<a class="demo-card" href="pages/agent.html">
+<img alt="DexHoldem agent evaluation turn-gate state" loading="lazy" src="assets/images/perception-turn-gate.jpg"/>
+<div class="demo-copy">
+<p class="demo-label">Agent Evaluation</p>
+<h3>Agent Evaluation</h3>
+<p>Agentic perception results over 36 tabletop states quantify strict state recovery and field-wise bottlenecks.</p>
+</div>
+</a>
+<a class="demo-card" href="pages/system.html#system-level-evaluation">
+<img alt="DexHoldem system-level trajectory state" loading="lazy" src="assets/images/system-level-trajectory.jpg"/>
+<div class="demo-copy">
+<p class="demo-label">System Evaluation</p>
+<h3>System-Level Evaluation</h3>
+<p>Three GPT 5.5 + pi0 hand-level case studies expose wait branches, recovery dispatches, human-help, and primitive counters.</p>
+</div>
+</a>
+</div>
+</section>
+<section class="section resource-band" id="resources">
+<div class="section-heading">
+<p class="eyebrow">Resources</p>
+</div>
+<div class="resource-grid">
+
+
+
+<a class="resource-link" href="pages/data-demos.html">
+<span>Data Demos</span>
+<strong>Representative dataset camera triplets</strong>
+</a>
+<a class="resource-link" href="pages/policy-demos.html">
+<span>Policy Demos</span>
+<strong>Primitive-level policy rollout videos</strong>
+</a>
+
+
+
+
+
+
+</div>
+
+</section>
+
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="layout.js"></script>
+
+<script src="script.js?v=20260519-scroll-demo"></script>
+</body>
+</html>

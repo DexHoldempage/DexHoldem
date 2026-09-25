@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>DexHoldem Data in Benchmark | Anonymous ICLR Supplement</title>
+<meta content="DexHoldem benchmark data details: DexHoldem dataset physical demonstrations and DexHoldemSKills agent-state benchmark problems." name="description"/>
+<link href="../assets/images/logo-poker-hand.svg" rel="icon" type="image/svg+xml"/>
+
+
+
+<link href="../styles.css" rel="stylesheet"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/><meta content="no-referrer" name="referrer"/><meta content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; frame-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" http-equiv="Content-Security-Policy"/></head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header scrolled">
+<a aria-label="DexHoldem home" class="brand" href="../index.html">
+<span class="brand-mark image-mark"><img alt="" src="../assets/images/logo-poker-hand.svg"/></span>
+<span>DexHoldem</span>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a href="../index.html#benchmark">Benchmark</a>
+<a href="../index.html#results">Results</a>
+<a href="../index.html#demo-release">Demos</a>
+<a href="../index.html#resources">Resources</a>
+</nav>
+</header>
+<main class="detail-page" id="main-content">
+<section class="detail-hero">
+<div>
+<p class="eyebrow">Benchmark Data</p>
+<h1>Data in Benchmark</h1>
+<p>
+            DexHoldem releases two complementary data surfaces: physical robot demonstrations for
+            policy learning, and agent-state problems for evaluating structured tabletop perception,
+            routing, and action selection.
+          </p>
+</div>
+<img alt="DexHoldem policy benchmark success and failure examples" class="detail-contain" loading="lazy" src="../assets/images/benchmark-data-examples.jpg"/>
+</section>
+<section class="detail-section">
+<div class="detail-grid four">
+<article>
+<h3>1,470 Demos</h3>
+<p>Fourteen physical manipulation primitives with 105 accepted teleoperated demonstrations per primitive.</p>
+</article>
+<article>
+<h3>100/5 Split</h3>
+<p>Every primitive uses 100 training trajectories and 5 held-out validation trajectories.</p>
+</article>
+<article>
+<h3>378 GB</h3>
+<p>The Hugging Face DexHoldem dataset release reports a 378 GB hosted file footprint under CC-BY-4.0.</p>
+</article>
+<article>
+<h3>36 Agent Problems</h3>
+<p>The Skills benchmark contains p1-p36 with structured labels, route targets, and action targets.</p>
+</article>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Physical Demonstrations</p>
+<h2>DexHoldem dataset is the policy-learning data release.</h2>
+<p>
+            Each trajectory records synchronized multi-view RGB-D observations and robot joint
+            measurements on the ShadowHand-UR10e tabletop setup. The benchmark recorder stores
+            instruction IDs, robot proprioception, and 30-dimensional joint-position action targets
+            for card and chip manipulation.
+          </p>
+</div>
+<div class="table-wrap">
+<table class="leaderboard">
+<caption>Physical demonstration data used by the policy benchmark.</caption>
+<thead>
+<tr>
+<th scope="col">Item</th>
+<th scope="col">Benchmark Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Platform</th>
+<td>Shadow Dexterous Hand mounted on a Universal Robots UR10e arm.</td>
+</tr>
+<tr>
+<th scope="row">Objects</th>
+<td>Standard poker cards and poker chips with denominations 5, 10, 50, and 100.</td>
+</tr>
+<tr>
+<th scope="row">Sensors</th>
+<td>Top-down, third-person, and wrist-mounted Intel RealSense RGB-D cameras plus robot joint-position proprioception.</td>
+</tr>
+<tr>
+<th scope="row">Primitive split</th>
+<td>105 accepted trajectories per primitive, organized as 100 training and 5 validation demonstrations.</td>
+</tr>
+<tr>
+<th scope="row">Action format</th>
+<td>30-dimensional joint-position targets: 6 arm dimensions and 24 ShadowHand dimensions.</td>
+</tr>
+<tr>
+<th scope="row">Hosted release</th>
+<td>Anonymous review dataset</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="detail-section">
+<div class="section-heading compact-heading">
+<p class="eyebrow">Agent Benchmark Data</p>
+<h2>DexHoldemSKills bench provides fixed tabletop states for agent evaluation.</h2>
+<p>
+            The agent benchmark data lives under <code>bench/problems</code>. Each problem gives an
+            agent-view state, predecessor context when relevant, ground-truth structured state, the
+            expected routing decision, and the expected high-level action.
+          </p>
+</div>
+<div class="table-wrap">
+<table class="leaderboard">
+<caption>Agent-state problem inventory in DexHoldemSKills bench.</caption>
+<thead>
+<tr>
+<th scope="col">Problem Type</th>
+<th scope="col">Count</th>
+<th scope="col">Evaluation Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr><th scope="row">initial_turn_gate</th><td>1</td><td>Turn ownership, blind assignment, and first route selection.</td></tr>
+<tr><th scope="row">opponent_wait</th><td>4</td><td>Stable states where the opponent owns the turn and the agent should wait.</td></tr>
+<tr><th scope="row">robot_action_progress</th><td>4</td><td>Robot motion, loop stage, and scene stability while a primitive is in progress.</td></tr>
+<tr><th scope="row">held_card_read</th><td>2</td><td>Held-card recognition plus cached sequence continuation.</td></tr>
+<tr><th scope="row">cached_sequence_gate</th><td>2</td><td>Continuation of a pre-translated multi-atom action sequence.</td></tr>
+<tr><th scope="row">recovery_safety</th><td>5</td><td>Retryable recovery versus human-help or unsafe continuation.</td></tr>
+<tr><th scope="row">poker_table_decision</th><td>9</td><td>Table layout, cards, bets, chips, and legal decision routing.</td></tr>
+<tr><th scope="row">fold_win_judge</th><td>1</td><td>Non-showdown win state and collect-winnings route.</td></tr>
+<tr><th scope="row">showdown_outcome</th><td>6</td><td>Visible/cached cards and terminal win-or-lose judgment.</td></tr>
+<tr><th scope="row">collect_winnings_sequence</th><td>2</td><td>Collect-winnings progress and robot-state routing.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="detail-section">
+<div class="detail-grid three">
+<article>
+<h3>Structured State</h3>
+<p>
+              Labels include <code>loop_stage</code>, <code>blind</code>,
+              <code>scene_stable</code>, <code>is_my_turn</code>, community cards, chip
+              inventories, and bet dictionaries.
+            </p>
+</article>
+<article>
+<h3>Routing Targets</h3>
+<p>
+              Each problem records the expected route, such as wait, choose poker action,
+              recover retryable, request human help, or collect winnings.
+            </p>
+</article>
+<article>
+<h3>Audit Files</h3>
+<p>
+              The bench includes <code>ground_truth.json</code>, <code>problem_types.json</code>,
+              <code>problem_clusters.json</code>, and the core 36-problem list.
+            </p>
+</article>
+</div>
+</section>
+<section class="detail-section detail-links">
+<a class="button primary" href="data-demos.html">Data Demo Browser</a>
+
+
+<a class="button" href="../index.html#demo-release">Back To Release Cards</a>
+</section>
+</main>
+<footer class="site-footer">
+<p>Anonymous ICLR review supplement.
+        DexHoldem project page. Site organization is inspired by
+        OSWorld and
+        SWE-bench.
+      </p>
+</footer>
+<script src="../layout.js"></script>
+</body>
+</html>
